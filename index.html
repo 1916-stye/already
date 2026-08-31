@@ -69,6 +69,16 @@
           fixExistingResources();
           if (++attempts >= 20) window.clearInterval(resourceTimer);
         }, 250);
+        const startHeroVideo = () => {
+          const video = document.querySelector('video.hero-video');
+          if (!video) return;
+          rewriteElement(video);
+          video.muted = true;
+          if (video.readyState === 0) video.load();
+          video.play().catch(() => {});
+        };
+        window.addEventListener('pointerdown', startHeroVideo, { once: true, passive: true });
+        window.addEventListener('touchstart', startHeroVideo, { once: true, passive: true });
       })();
     </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
