@@ -41,6 +41,14 @@
             set(value) { hrefDescriptor.set.call(this, rewrite(value)); },
           });
         }
+        const originalSetAttribute = window.Element.prototype.setAttribute;
+        window.Element.prototype.setAttribute = function (name, value) {
+          const lowerName = String(name).toLowerCase();
+          if (lowerName === 'src' || lowerName === 'poster' || lowerName === 'href') {
+            value = rewrite(value);
+          }
+          return originalSetAttribute.call(this, name, value);
+        };
       })();
     </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
