@@ -104,8 +104,33 @@
             fallback.style.backgroundImage = `url(${repoBase}/hero-poster.svg)`;
             hero.prepend(fallback);
           }
-          const showFallback = () => hero?.classList.add('hero-video-fallback-active');
-          const hideFallback = () => hero?.classList.remove('hero-video-fallback-active');
+          let playButton = hero?.querySelector('.hero-video-play');
+          if (hero && !playButton) {
+            playButton = document.createElement('button');
+            playButton.type = 'button';
+            playButton.className = 'hero-video-play';
+            playButton.textContent = '播放背景视频';
+            playButton.setAttribute('aria-label', '播放背景视频');
+            playButton.hidden = true;
+            hero.append(playButton);
+          }
+          const showFallback = () => {
+            hero?.classList.add('hero-video-fallback-active');
+            if (playButton) playButton.hidden = false;
+          };
+          const hideFallback = () => {
+            hero?.classList.remove('hero-video-fallback-active');
+            if (playButton) playButton.hidden = true;
+          };
+          if (playButton && !playButton.dataset.bound) {
+            playButton.dataset.bound = '1';
+            playButton.addEventListener('click', () => {
+              video.muted = true;
+              video.play().then(hideFallback).catch(() => {
+                playButton.textContent = '微信暂时无法播放';
+              });
+            });
+          }
           const source = video.querySelector('source');
           if (source) originalSetAttribute.call(source, 'src', `${repoBase}/profile/resume-background.mp4`);
           originalSetAttribute.call(video, 'poster', `${repoBase}/hero-poster.svg`);

@@ -12,6 +12,27 @@
 }
 .hero.hero-video-fallback-active .hero-video-fallback { opacity: 1; }
 .hero.hero-video-fallback-active .hero-video { opacity: 0 !important; }
+.hero-video-play {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  z-index: 4;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(190, 255, 77, .72);
+  border-radius: 999px;
+  color: #d8ff83;
+  background: rgba(12, 13, 20, .72);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .24);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+}
+.hero-video-play:hover { background: rgba(106, 76, 220, .78); }
+@media (max-width: 700px) {
+  .hero-video-play { right: 20px; bottom: 74px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hero-video-fallback { transition: none; }
 }
