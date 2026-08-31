@@ -64,6 +64,16 @@
             const next = rewrite(value);
             if (next && next !== value) originalSetAttribute.call(element, name, next);
           }
+          // 证书卡片先使用轻量缩略图；点击弹窗时仍保留高清原图。
+          if (element.tagName === 'IMG' && !element.closest('.certificate-modal')) {
+            const current = element.getAttribute('src') || '';
+            const marker = '/certificates/';
+            if (current.includes(marker) && !current.includes('/certificates/thumbs/')) {
+              const filename = decodeURIComponent(current.split('/').pop() || '').replace(/\.[^.]+$/, '');
+              const base = current.slice(0, current.indexOf(marker) + marker.length);
+              originalSetAttribute.call(element, 'src', `${base}thumbs/${encodeURIComponent(filename)}.jpg`);
+            }
+          }
           if (element.tagName === 'IMG' && element.getAttribute('src')?.includes('/profile/')) {
             element.loading = 'eager';
             element.decoding = 'async';
