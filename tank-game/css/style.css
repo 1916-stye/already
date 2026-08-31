@@ -96,3 +96,55 @@
   .stage:has(#menuPanel[hidden]){min-height:0;height:auto;aspect-ratio:16/9;place-items:center;padding-top:0}
   .stage:has(#menuPanel[hidden]) canvas{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
 }
+
+/* 手机端最终布局修正：大厅与战场使用不同高度，避免出现“只显示上半部分”。 */
+@media (max-width:900px){
+  /* 线上旧缓存即使带有提示节点，也不再遮挡内容。 */
+  .orientation-note,.landscape-action{display:none!important}
+
+  /* 大厅：只展示模式卡片和进入按钮，不让空画布撑高页面。 */
+  .stage:has(#menuPanel:not([hidden])){
+    display:block;
+    min-height:0;
+    height:auto;
+    aspect-ratio:auto;
+    padding:12px 0 16px;
+    overflow:visible;
+  }
+  .stage:has(#menuPanel:not([hidden])) canvas{display:none}
+  .stage:has(#menuPanel:not([hidden])) .menu-panel,
+  .stage:has(#resultPanel:not([hidden])) .result-panel{
+    position:relative;
+    inset:auto;
+    width:calc(100% - 24px);
+    max-height:none;
+    margin:0 auto;
+    transform:none;
+    overflow:visible;
+  }
+
+  /* 战场：画布严格保持 16:9，触控层跟随画布，不再延伸到下方空白。 */
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]){
+    display:grid;
+    min-height:0;
+    height:auto;
+    aspect-ratio:16 / 9;
+    padding:0;
+    overflow:hidden;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) canvas{
+    display:block;
+    width:100%;
+    height:100%;
+    max-width:none;
+    aspect-ratio:auto;
+    object-fit:fill;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .touch-controls{position:absolute;inset:0}
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .battle-tip{display:none}
+}
+
+/* 低矮横屏手机：画布填满可用高度，仍保持控制键在画布内。 */
+@media (max-width:900px) and (max-height:560px){
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]){height:100svh;aspect-ratio:auto}
+}
