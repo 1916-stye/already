@@ -1,0 +1,5 @@
+飞机大战
+├── index.html
+├── assets/
+│   ├── images/      ← 图片放这个文件夹
+│   └── sounds/      ← 音乐放这个文件夹
