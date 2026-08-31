@@ -92,3 +92,7 @@
 #menuPanel:not([hidden])~.touch-controls,#resultPanel:not([hidden])~.touch-controls{display:none!important}
 @media(max-width:900px){.orientation-note,.landscape-action{display:none!important}}
 @media(max-width:900px) and (orientation:portrait){.stage{min-height:calc(100svh - 92px);height:auto;aspect-ratio:auto;display:grid;place-items:start center;padding-top:14px}.menu-panel,.result-panel{top:14px;max-height:calc(100svh - 120px);overflow:auto}}
+@media(max-width:900px) and (orientation:portrait){
+  .stage:has(#menuPanel[hidden]){min-height:0;height:auto;aspect-ratio:16/9;place-items:center;padding-top:0}
+  .stage:has(#menuPanel[hidden]) canvas{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
+}
