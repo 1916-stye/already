@@ -49,6 +49,14 @@
           }
           return originalSetAttribute.call(this, name, value);
         };
+        const imageObserver = 'IntersectionObserver' in window
+          ? new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => {
+            if (isIntersecting && target.tagName === 'IMG') {
+              target.loading = 'eager';
+              target.decoding = 'async';
+            }
+          }), { rootMargin: '480px 0px' })
+          : null;
         const rewriteElement = (element) => {
           if (!element || element.nodeType !== 1) return;
           for (const name of ['src', 'poster', 'href']) {
@@ -56,6 +64,11 @@
             const next = rewrite(value);
             if (next && next !== value) originalSetAttribute.call(element, name, next);
           }
+          if (element.tagName === 'IMG' && element.getAttribute('src')?.includes('/profile/')) {
+            element.loading = 'eager';
+            element.decoding = 'async';
+          }
+          if (element.tagName === 'IMG') imageObserver?.observe(element);
           element.querySelectorAll?.('[src], [poster], [href]').forEach(rewriteElement);
         };
         new MutationObserver((mutations) => {
@@ -72,17 +85,24 @@
         const startHeroVideo = () => {
           const video = document.querySelector('video.hero-video');
           if (!video) return;
-          rewriteElement(video);
+          const source = video.querySelector('source');
+          if (source) originalSetAttribute.call(source, 'src', `${repoBase}/profile/resume-background.mp4`);
+          originalSetAttribute.call(video, 'poster', `${repoBase}/hero-poster.svg`);
           video.muted = true;
-          if (video.readyState === 0) video.load();
+          video.load();
           video.play().catch(() => {});
         };
+        window.setTimeout(startHeroVideo, 600);
         window.addEventListener('pointerdown', startHeroVideo, { once: true, passive: true });
         window.addEventListener('touchstart', startHeroVideo, { once: true, passive: true });
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) startHeroVideo();
+        });
       })();
     </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-EBh02GZA.css">
+    <link rel="stylesheet" href="./mobile-overrides.css">
   </head>
   <body>
     <div id="root"></div>

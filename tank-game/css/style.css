@@ -78,7 +78,17 @@
 @media(prefers-reduced-motion:reduce){.sound-button{transition:none}}
 /* 菜单和结算页不显示触控层，避免手机端按键覆盖模式卡片与文字。 */
 #menuPanel:not([hidden])~.touch-controls,#resultPanel:not([hidden])~.touch-controls{display:none!important}
+/* 手机端优先保证可读性，不再用横屏提示覆盖菜单和战场。 */
+@media(max-width:900px){.orientation-note,.landscape-action{display:none!important}}
+@media(max-width:900px) and (orientation:portrait){
+  .stage{min-height:calc(100svh - 92px);height:auto;aspect-ratio:auto;display:grid;place-items:start center;padding-top:14px}
+  .menu-panel,.result-panel{top:14px;max-height:calc(100svh - 120px);overflow:auto}
+}
 /* 原创大厅模式卡片，借鉴档案式信息层级，不复刻第三方界面。 */
 .menu-meta{display:flex;align-items:center;justify-content:space-between;gap:12px}.version-tag{color:rgba(244,251,248,.45);font:9px ui-monospace,monospace;letter-spacing:.1em}.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:14px 0 22px;text-align:left}.mode-card{position:relative;display:grid;gap:4px;min-height:67px;padding:12px 34px 11px 13px;border:1px solid rgba(159,220,212,.2);border-radius:10px;color:var(--text);background:rgba(5,17,23,.72);text-align:left;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}.mode-card:hover{border-color:rgba(145,245,207,.62);background:rgba(145,245,207,.08);transform:translateY(-1px)}.mode-card strong{font-size:14px}.mode-card small{color:var(--muted);font-size:10px}.mode-card span{position:absolute;right:12px;top:12px;color:rgba(145,245,207,.65);font:10px ui-monospace,monospace}.mode-card.is-selected{border-color:var(--mint);background:linear-gradient(135deg,rgba(145,245,207,.18),rgba(108,78,164,.14));box-shadow:0 0 20px rgba(145,245,207,.09)}.mode-card.is-locked{opacity:.45;cursor:not-allowed}.mode-card.is-locked:hover{border-color:rgba(159,220,212,.2);background:rgba(5,17,23,.72);transform:none}@media(max-width:480px){.menu-panel{padding:22px 16px}.mode-grid{gap:7px;margin-bottom:18px}.mode-card{min-height:62px;padding:10px 29px 9px 11px}.mode-card strong{font-size:13px}.mode-card small{font-size:9px}}
 /* 本机成绩提示 */
 .record-line{display:flex;align-items:center;justify-content:center;gap:10px;margin:-8px 0 18px;color:var(--muted);font:10px ui-monospace,monospace}.record-line b{color:#d7ff8a;font-weight:500}@media(max-width:480px){.record-line{margin:-6px 0 15px;font-size:9px}}
+/* 手机竖屏菜单保持紧凑，触控层和旋转提示不遮挡入口。 */
+#menuPanel:not([hidden])~.touch-controls,#resultPanel:not([hidden])~.touch-controls{display:none!important}
+@media(max-width:900px){.orientation-note,.landscape-action{display:none!important}}
+@media(max-width:900px) and (orientation:portrait){.stage{min-height:calc(100svh - 92px);height:auto;aspect-ratio:auto;display:grid;place-items:start center;padding-top:14px}.menu-panel,.result-panel{top:14px;max-height:calc(100svh - 120px);overflow:auto}}
