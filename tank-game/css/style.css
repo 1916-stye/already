@@ -209,4 +209,25 @@
     white-space:nowrap;
     opacity:.72;
   }
+  /* 缩小并错开三组控件，避免方向键、瞄准盘和发射键相互重叠。 */
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .dpad{
+    left:16px;
+    top:26px;
+    grid-template-columns:repeat(3,42px);
+    grid-template-rows:repeat(3,42px);
+    gap:3px;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .dpad button{width:42px;height:42px}
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .aim-pad{
+    right:108px;
+    top:20px;
+    width:100px;
+    height:100px;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .fire-button{
+    right:16px;
+    top:32px;
+    width:78px;
+    height:78px;
+  }
 }
