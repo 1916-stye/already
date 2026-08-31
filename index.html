@@ -49,6 +49,18 @@
           }
           return originalSetAttribute.call(this, name, value);
         };
+        const rewriteElement = (element) => {
+          if (!element || element.nodeType !== 1) return;
+          for (const name of ['src', 'poster', 'href']) {
+            const value = element.getAttribute(name);
+            const next = rewrite(value);
+            if (next && next !== value) originalSetAttribute.call(element, name, next);
+          }
+          element.querySelectorAll?.('[src], [poster], [href]').forEach(rewriteElement);
+        };
+        new MutationObserver((mutations) => {
+          mutations.forEach(({ addedNodes }) => addedNodes.forEach(rewriteElement));
+        }).observe(document.documentElement, { childList: true, subtree: true });
       })();
     </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
