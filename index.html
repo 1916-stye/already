@@ -3,8 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#08090c" />
-    <title>黄紫琦 — Visual / AI / Brand Designer</title>
+  <meta name="theme-color" content="#08090c" />
+  <title>黄紫琦 — Visual / AI / Brand Designer</title>
+    <script>
+      (() => {
+        // GitHub Pages 项目站点部署在 /already/ 子目录时，兼容旧版根路径资源。
+        const repoBase = location.pathname.startsWith('/already/') ? '/already' : '';
+        if (!repoBase) return;
+        const rewrite = (value) => {
+          if (typeof value !== 'string') return value;
+          return /^\/(?:profile|certificates|tank-game|plane-game)(?:\/|$)/.test(value)
+            ? repoBase + value
+            : value;
+        };
+        const patchSrc = (prototype) => {
+          const descriptor = Object.getOwnPropertyDescriptor(prototype, 'src');
+          if (!descriptor || !descriptor.set) return;
+          Object.defineProperty(prototype, 'src', {
+            ...descriptor,
+            set(value) { descriptor.set.call(this, rewrite(value)); },
+          });
+        };
+        patchSrc(window.HTMLImageElement.prototype);
+        patchSrc(window.HTMLMediaElement.prototype);
+        const hrefDescriptor = Object.getOwnPropertyDescriptor(window.HTMLAnchorElement.prototype, 'href');
+        if (hrefDescriptor && hrefDescriptor.set) {
+          Object.defineProperty(window.HTMLAnchorElement.prototype, 'href', {
+            ...hrefDescriptor,
+            set(value) { hrefDescriptor.set.call(this, rewrite(value)); },
+          });
+        }
+      })();
+    </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-EBh02GZA.css">
   </head>
