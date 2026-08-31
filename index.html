@@ -89,8 +89,18 @@
           if (source) originalSetAttribute.call(source, 'src', `${repoBase}/profile/resume-background.mp4`);
           originalSetAttribute.call(video, 'poster', `${repoBase}/hero-poster.svg`);
           video.muted = true;
-          video.load();
+          video.preload = 'auto';
+          if (video.readyState < 2) video.load();
           video.play().catch(() => {});
+          // 微信内置浏览器可能在切后台、网络抖动或首帧解码后暂停视频；无控件视频可以安全恢复播放。
+          if (!video.dataset.recoveryBound) {
+            video.dataset.recoveryBound = '1';
+            const resume = () => { if (!document.hidden && video.paused) video.play().catch(() => {}); };
+            ['loadeddata', 'canplay', 'stalled', 'waiting', 'pause'].forEach((eventName) => {
+              video.addEventListener(eventName, () => window.setTimeout(resume, eventName === 'pause' ? 120 : 320), { passive: true });
+            });
+            video.addEventListener('ended', () => { video.currentTime = 0; resume(); }, { passive: true });
+          }
         };
         window.setTimeout(startHeroVideo, 600);
         window.addEventListener('pointerdown', startHeroVideo, { once: true, passive: true });
@@ -100,7 +110,7 @@
         });
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-C6X84rei.js"></script>
+    <script type="module" crossorigin src="./assets/index-Br1syAP_.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-EBh02GZA.css">
     <link rel="stylesheet" href="./mobile-overrides.css?v=mobile3">
   </head>
