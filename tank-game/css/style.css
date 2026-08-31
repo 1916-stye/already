@@ -152,31 +152,61 @@
 /* 竖屏战斗采用沉浸式高度，避免 16:9 画布只占手机上半屏。 */
 @media (max-width:900px) and (orientation:portrait){
   .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]){
-    height:calc(100svh - 100px);
-    min-height:420px;
+    display:flex;
+    flex-direction:column;
+    height:auto;
+    min-height:0;
     aspect-ratio:auto;
+    overflow:visible;
   }
   .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) canvas{
+    flex:0 0 auto;
     width:100%;
-    height:100%;
-    aspect-ratio:auto;
-    object-fit:fill;
+    height:auto;
+    aspect-ratio:16 / 9;
+    object-fit:contain;
   }
-  /* 给手机用户一条不遮挡地图的即时提示，并为浏览器底部留出安全距离。 */
+  /* 操作区独立放在画布下方，避免把地图纵向拉伸。 */
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .touch-controls{
+    position:relative;
+    inset:auto;
+    flex:0 0 174px;
+    height:174px;
+    width:100%;
+    border-top:1px solid rgba(159,220,212,.15);
+    background:linear-gradient(180deg,rgba(4,16,22,.9),rgba(8,16,30,.96));
+    pointer-events:none;
+    padding-bottom:max(8px, env(safe-area-inset-bottom));
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .dpad{
+    top:20px;
+    bottom:auto;
+    left:22px;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .aim-pad{
+    top:18px;
+    bottom:auto;
+    right:132px;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .fire-button{
+    top:39px;
+    bottom:auto;
+    right:20px;
+  }
   .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .battle-tip{
     display:block;
-    top:10px;
-    right:auto;
-    bottom:auto;
-    left:50%;
-    width:max-content;
-    max-width:calc(100% - 24px);
-    padding:6px 9px;
-    transform:translateX(-50%);
+    top:auto;
+    right:0;
+    bottom:7px;
+    left:0;
+    width:100%;
+    padding:0 8px;
+    transform:none;
+    border:0;
+    background:none;
     font-size:9px;
+    text-align:center;
     white-space:nowrap;
-  }
-  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .touch-controls{
-    padding-bottom:max(8px, env(safe-area-inset-bottom));
+    opacity:.72;
   }
 }
