@@ -26,6 +26,14 @@
         };
         patchSrc(window.HTMLImageElement.prototype);
         patchSrc(window.HTMLMediaElement.prototype);
+        patchSrc(window.HTMLSourceElement.prototype);
+        const posterDescriptor = Object.getOwnPropertyDescriptor(window.HTMLVideoElement.prototype, 'poster');
+        if (posterDescriptor && posterDescriptor.set) {
+          Object.defineProperty(window.HTMLVideoElement.prototype, 'poster', {
+            ...posterDescriptor,
+            set(value) { posterDescriptor.set.call(this, rewrite(value)); },
+          });
+        }
         const hrefDescriptor = Object.getOwnPropertyDescriptor(window.HTMLAnchorElement.prototype, 'href');
         if (hrefDescriptor && hrefDescriptor.set) {
           Object.defineProperty(window.HTMLAnchorElement.prototype, 'href', {
