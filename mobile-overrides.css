@@ -1,11 +1,12 @@
 /* 移动端首屏优化：视频背景更明显，头像与姓名形成清晰层级。 */
 @media (max-width: 700px) {
+  .hero { background: url('./hero-poster.svg') center / cover no-repeat #0b0b0e; }
   .hero { min-height: 100svh; align-items: flex-start; }
   /* 手机网络较慢时也保持可见：提高视频存在感，但给文字保留足够对比度。 */
-  .hero-video { opacity: .62; filter: saturate(.96) contrast(1.03) brightness(1.12); }
+  .hero-video { opacity: .84; filter: saturate(.98) contrast(1.02) brightness(1.16); }
   .hero::before {
     background: radial-gradient(circle at 50% 25%, rgba(111,83,235,.22), transparent 38%),
-      linear-gradient(180deg, rgba(8,9,12,.32) 0%, rgba(8,9,12,.16) 48%, rgba(8,9,12,.76) 100%);
+      linear-gradient(180deg, rgba(8,9,12,.2) 0%, rgba(8,9,12,.08) 48%, rgba(8,9,12,.66) 100%);
   }
   .hero-content { padding: 78px 20px 104px; }
   .hero-profile-layout { display: flex; flex-direction: column; gap: 24px; }
