@@ -1,4 +1,20 @@
 /* 移动端首屏优化：视频背景更明显，头像与姓名形成清晰层级。 */
+.hero-video-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.hero.hero-video-fallback-active .hero-video-fallback { opacity: 1; }
+.hero.hero-video-fallback-active .hero-video { opacity: 0 !important; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-video-fallback { transition: none; }
+}
 @media (max-width: 700px) {
   .hero { background: url('./hero-poster.svg') center / cover no-repeat #0b0b0e; }
   .hero { min-height: 100svh; align-items: flex-start; }

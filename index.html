@@ -95,19 +95,49 @@
         const startHeroVideo = () => {
           const video = document.querySelector('video.hero-video');
           if (!video) return;
+          const hero = video.closest('.hero');
+          // 微信内置浏览器偶尔会拦截视频或停在首帧：准备同域海报作为可见兜底。
+          if (hero && !hero.querySelector('.hero-video-fallback')) {
+            const fallback = document.createElement('div');
+            fallback.className = 'hero-video-fallback';
+            fallback.setAttribute('aria-hidden', 'true');
+            fallback.style.backgroundImage = `url(${repoBase}/hero-poster.svg)`;
+            hero.prepend(fallback);
+          }
+          const showFallback = () => hero?.classList.add('hero-video-fallback-active');
+          const hideFallback = () => hero?.classList.remove('hero-video-fallback-active');
           const source = video.querySelector('source');
           if (source) originalSetAttribute.call(source, 'src', `${repoBase}/profile/resume-background.mp4`);
           originalSetAttribute.call(video, 'poster', `${repoBase}/hero-poster.svg`);
           video.muted = true;
           video.preload = 'auto';
           if (video.readyState < 2) video.load();
-          video.play().catch(() => {});
+          video.play().then(hideFallback).catch(showFallback);
           // 微信内置浏览器可能在切后台、网络抖动或首帧解码后暂停视频；无控件视频可以安全恢复播放。
           if (!video.dataset.recoveryBound) {
             video.dataset.recoveryBound = '1';
-            const resume = () => { if (!document.hidden && video.paused) video.play().catch(() => {}); };
+            let fallbackTimer = 0;
+            const scheduleFallback = () => {
+              window.clearTimeout(fallbackTimer);
+              fallbackTimer = window.setTimeout(() => {
+                if (video.paused || video.readyState < 2) showFallback();
+              }, 2200);
+            };
+            const resume = () => {
+              if (!document.hidden && video.paused) {
+                video.play().then(hideFallback).catch(showFallback);
+              }
+            };
+            video.addEventListener('playing', () => {
+              window.clearTimeout(fallbackTimer);
+              hideFallback();
+            }, { passive: true });
+            video.addEventListener('error', showFallback, { passive: true });
             ['loadeddata', 'canplay', 'stalled', 'waiting', 'pause'].forEach((eventName) => {
-              video.addEventListener(eventName, () => window.setTimeout(resume, eventName === 'pause' ? 120 : 320), { passive: true });
+              video.addEventListener(eventName, () => {
+                if (eventName === 'stalled' || eventName === 'waiting') scheduleFallback();
+                window.setTimeout(resume, eventName === 'pause' ? 120 : 320);
+              }, { passive: true });
             });
             video.addEventListener('ended', () => { video.currentTime = 0; resume(); }, { passive: true });
           }
@@ -122,7 +152,7 @@
     </script>
     <script type="module" crossorigin src="./assets/index-Br1syAP_.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-EBh02GZA.css">
-    <link rel="stylesheet" href="./mobile-overrides.css?v=mobile3">
+    <link rel="stylesheet" href="./mobile-overrides.css?v=mobile4">
   </head>
   <body>
     <div id="root"></div>
