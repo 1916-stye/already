@@ -61,6 +61,14 @@
         new MutationObserver((mutations) => {
           mutations.forEach(({ addedNodes }) => addedNodes.forEach(rewriteElement));
         }).observe(document.documentElement, { childList: true, subtree: true });
+        const fixExistingResources = () => {
+          document.querySelectorAll('[src], [poster], [href]').forEach(rewriteElement);
+        };
+        let attempts = 0;
+        const resourceTimer = window.setInterval(() => {
+          fixExistingResources();
+          if (++attempts >= 20) window.clearInterval(resourceTimer);
+        }, 250);
       })();
     </script>
     <script type="module" crossorigin src="./assets/index-Bot-FohB.js"></script>
