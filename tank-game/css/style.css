@@ -152,8 +152,8 @@
 /* 竖屏战斗采用沉浸式高度，避免 16:9 画布只占手机上半屏。 */
 @media (max-width:900px) and (orientation:portrait){
   .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]){
-    height:calc(100svh - 70px);
-    min-height:460px;
+    height:calc(100svh - 100px);
+    min-height:420px;
     aspect-ratio:auto;
   }
   .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) canvas{
@@ -161,5 +161,22 @@
     height:100%;
     aspect-ratio:auto;
     object-fit:fill;
+  }
+  /* 给手机用户一条不遮挡地图的即时提示，并为浏览器底部留出安全距离。 */
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .battle-tip{
+    display:block;
+    top:10px;
+    right:auto;
+    bottom:auto;
+    left:50%;
+    width:max-content;
+    max-width:calc(100% - 24px);
+    padding:6px 9px;
+    transform:translateX(-50%);
+    font-size:9px;
+    white-space:nowrap;
+  }
+  .stage:has(#menuPanel[hidden]):has(#resultPanel[hidden]) .touch-controls{
+    padding-bottom:max(8px, env(safe-area-inset-bottom));
   }
 }
