@@ -3,7 +3,13 @@
   T.Game=function(canvas,input){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=input;this.map=new T.Map();
     this.state='menu';this.last=0;this.score=0;this.energy=0;this.level=1;this.mode='normal';this.sessionLevels=2;this.completedLevels=0;this.wave=0;this.runTime=0;this.upgrades={rapid:0,power:0,armor:0};this.shopReward=0;this.baseMaxHealth=100;this.baseHealth=100;this.baseHitCooldown=0;this.player=null;this.enemies=[];this.bullets=[];this.effects=[];this.audio=new T.Audio();
-    this.base={x:480,y:454};this.ready=0;this.loop=this.loop.bind(this);requestAnimationFrame(this.loop);
+    this.base={x:480,y:454};this.ready=0;this.loop=this.loop.bind(this);this.syncUiState();requestAnimationFrame(this.loop);
+  };
+  T.Game.prototype.syncUiState=function(){
+    var cls=['game-menu','game-playing','game-paused','game-shop','game-result'];
+    document.body.classList.remove.apply(document.body.classList,cls);
+    var name=this.state==='playing'?'game-playing':(this.state==='paused'?'game-paused':(this.state==='shop'?'game-shop':((this.state==='won'||this.state==='lost'||this.state==='levelComplete')?'game-result':'game-menu')));
+    document.body.classList.add(name);
   };
   T.Game.prototype.start=function(mode){this.audio.unlock();this.mode=mode||this.mode||'normal';this.sessionLevels=(this.mode==='boss'||this.mode==='endless')?1:T.Config.totalLevels;this.score=0;this.energy=0;this.completedLevels=0;this.wave=0;this.runTime=0;this.upgrades={rapid:0,power:0,armor:0};this.shopReward=0;this.baseHealth=this.baseMaxHealth;this.baseHitCooldown=0;this.level=this.mode==='boss'?2:1;this.updateRecordLabel();this.updateHud();this.loadLevel(this.level)};
   T.Game.prototype.recordKey=function(){return 'tank-game-best-'+this.mode};
@@ -11,7 +17,7 @@
   T.Game.prototype.updateRecordLabel=function(){var el=document.getElementById('bestRecord');if(!el)return;var names={normal:'普通模式',challenge:'挑战模式',boss:'Boss 模式',endless:'无尽模式'},record=this.getRecord();el.textContent=names[this.mode]+' · '+(record?(this.mode==='endless'?record.wave+' 波':String(record.score).padStart(4,'0')):'暂无')};
   T.Game.prototype.saveRecord=function(){var value=this.mode==='endless'?{wave:this.wave,score:this.score}:{score:this.score};try{var old=this.getRecord();if(!old||(this.mode==='endless'?value.wave>old.wave:value.score>old.score))localStorage.setItem(this.recordKey(),JSON.stringify(value))}catch(e){}this.updateRecordLabel()};
   T.Game.prototype.loadLevel=function(level){
-    var C=T.Config;this.state='playing';this.level=level;this.ready=1.6;
+    var C=T.Config;this.state='playing';this.syncUiState();this.level=level;this.ready=1.6;
     this.map=new T.Map(level);
     var challenge=this.mode==='challenge';
     var playerHealth=(challenge?75:100)+this.upgrades.armor*25;
@@ -49,7 +55,7 @@
     if(visible&&e.cool<=.15){e.telegraph=e.type==='boss'?.8:.48;e.intent='准备开火';e.intentColor='#ff8f9e'}
   };
   T.Game.prototype.energyForEnemy=function(enemy){return enemy.type==='boss'?120:(enemy.type==='heavy'?50:(enemy.type==='scout'?25:35))};
-  T.Game.prototype.openShop=function(reward){this.state='shop';this.shopReward=reward;document.getElementById('pauseButton').disabled=true;document.getElementById('fireTopButton').disabled=true;document.getElementById('resultPanel').hidden=true;document.getElementById('shopPanel').hidden=false;document.getElementById('statusText').textContent='战地补给';document.getElementById('shopReward').textContent='本场奖励 +'+String(reward).padStart(3,'0')+' 能源';document.getElementById('shopText').textContent=this.mode==='endless'?'下一波为第 '+this.wave+' 波，配置你的战术。':'第 '+this.level+' 关完成，配置下一关战术。';document.getElementById('shopContinueButton').innerHTML=this.mode==='endless'?'进入下一波 <span>→</span>':'进入下一关 <span>→</span>';this.updateShop();this.updateHud()};
+  T.Game.prototype.openShop=function(reward){this.state='shop';this.syncUiState();this.shopReward=reward;document.getElementById('pauseButton').disabled=true;document.getElementById('fireTopButton').disabled=true;document.getElementById('resultPanel').hidden=true;document.getElementById('shopPanel').hidden=false;document.getElementById('statusText').textContent='战地补给';document.getElementById('shopReward').textContent='本场奖励 +'+String(reward).padStart(3,'0')+' 能源';document.getElementById('shopText').textContent=this.mode==='endless'?'下一波为第 '+this.wave+' 波，配置你的战术。':'第 '+this.level+' 关完成，配置下一关战术。';document.getElementById('shopContinueButton').innerHTML=this.mode==='endless'?'进入下一波 <span>→</span>':'进入下一关 <span>→</span>';this.updateShop();this.updateHud()};
   T.Game.prototype.upgradePrice=function(key){var cfg=T.Config.shopUpgrades[key],level=this.upgrades[key]||0;return Math.round(cfg.basePrice*(1+level*.65))};
   T.Game.prototype.updateShop=function(){var self=this,cfg=T.Config.shopUpgrades;document.getElementById('shopEnergyValue').textContent=String(this.energy).padStart(3,'0');document.querySelectorAll('.shop-card[data-upgrade]').forEach(function(card){var key=card.dataset.upgrade,level=self.upgrades[key]||0,max=cfg[key].maxLevel,price=self.upgradePrice(key),locked=level>=max||self.energy<price;card.classList.toggle('is-bought',level>=max);card.classList.toggle('is-disabled',locked);card.querySelector('[data-price]').textContent=level>=max?'已满级':String(price);card.querySelector('[data-level]').textContent='LV.'+level+' / '+max})};
   T.Game.prototype.buyUpgrade=function(key){if(this.state!=='shop'||!T.Config.shopUpgrades[key])return;var cfg=T.Config.shopUpgrades[key],level=this.upgrades[key]||0,price=this.upgradePrice(key);if(level>=cfg.maxLevel){document.getElementById('shopText').textContent='这项强化已经达到最高等级。';return}if(this.energy<price){document.getElementById('shopText').textContent='能源不足，先回到战场继续积累。';return}this.energy-=price;this.upgrades[key]=level+1;if(key==='armor'&&this.player){this.player.maxHealth+=25;this.player.health=Math.min(this.player.maxHealth,this.player.health+25)}if(this.audio&&this.audio.upgrade)this.audio.upgrade();document.getElementById('shopText').textContent=cfg.name+' 已完成，当前等级 LV.'+this.upgrades[key]+'。';this.updateShop();this.updateHud()};
@@ -64,7 +70,7 @@
       if(this.mode!=='boss'&&this.level<T.Config.totalLevels){this.openShop(reward);return}
     }else this.audio.fail();
     this.saveRecord();
-    this.state=win?'won':'lost';document.getElementById('statusText').textContent=win?'任务完成':'基地失守';
+    this.state=win?'won':'lost';this.syncUiState();document.getElementById('statusText').textContent=win?'任务完成':'基地失守';
     document.getElementById('pauseButton').disabled=true;document.getElementById('fireTopButton').disabled=true;
     document.getElementById('shopPanel').hidden=true;document.getElementById('resultPanel').hidden=false;document.getElementById('resultEyebrow').textContent=win?'MISSION COMPLETE':'MISSION FAILED';
     document.getElementById('resultTitle').textContent=win?'任务完成':'基地失守';document.getElementById('resultText').textContent=win?'你清除了全部敌军，守住了基地。':(this.mode==='endless'?'你坚持到了第 '+Math.max(1,this.wave-1)+' 波。再试一次，刷新纪录吧。':'敌军突破了防线，再试一次吧。');document.getElementById('resultButton').textContent='再来一次';
