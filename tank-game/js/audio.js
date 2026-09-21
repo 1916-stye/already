@@ -12,5 +12,6 @@
   T.Audio.prototype.explosion=function(){this.noise(.32,.85,'lowpass',850);this.tone(145,42,.36,'sine',.78)};
   T.Audio.prototype.boss=function(){this.tone(190,250,.24,'triangle',.55);this.tone(260,390,.25,'triangle',.5,.2);this.tone(340,520,.3,'sine',.42,.4)};
   T.Audio.prototype.complete=function(){this.tone(440,660,.14,'sine',.58);this.tone(554,830,.16,'sine',.52,.12);this.tone(660,990,.25,'sine',.48,.25)};
+  T.Audio.prototype.upgrade=function(){this.tone(420,720,.12,'triangle',.55);this.tone(720,980,.16,'sine',.42,.1)};
   T.Audio.prototype.fail=function(){this.tone(230,120,.2,'triangle',.55);this.tone(150,58,.3,'sine',.5,.16)};
 })();
